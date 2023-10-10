@@ -9,7 +9,9 @@ namespace CleanupApp.Models
     public abstract class CleaningTask
     {
         public string Name { get; set; } = "Untitled Task";
+        public string Codename { get; set; } = "no-codename";
         public Action? Action { get; set; }
+
 
         public void Run()
         {

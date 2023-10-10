@@ -6,30 +6,31 @@ namespace CleanupApp.Tasks
     {
         private static List<string> windirs = new()
         {
-            Environment.GetEnvironmentVariable("USERPROFILE") + @"\Downloads",
-            Environment.GetEnvironmentVariable("USERPROFILE") + @"\Pictures",
-            Environment.GetEnvironmentVariable("USERPROFILE") + @"\Music",
-            Environment.GetEnvironmentVariable("USERPROFILE") + @"\Videos"
+            @"Downloads",
+            @"Pictures",
+            @"Music",
+            @"Videos"
         };
 
         private static List<string> appdirs = new()
         {
-            Environment.GetEnvironmentVariable("USERPROFILE") + @"\OneDrive",
-            Environment.GetEnvironmentVariable("USERPROFILE") + @"\source",
-            Environment.GetEnvironmentVariable("USERPROFILE") + @"\AppData\Local\Roblox",
-            Environment.GetEnvironmentVariable("USERPROFILE") + @"\AppData\Local\Temp"
+            @"OneDrive",
+            @"source",
+            @"AppData\Local\Roblox",
+            @"AppData\Local\Temp"
         };
 
         public ClearDirsTask()
         {
             Name = "Clear common directories";
+            Codename = "common-dirs";
             Action = ClearDirectories;
         }
 
         private void ClearDirectories()
         {
-            windirs.ForEach((value) => DirHelpers.RemoveDir(value, true));
-            appdirs.ForEach((value) => DirHelpers.RemoveDir(value));
+            windirs.ForEach((value) => DirHelpers.RemoveDir(DirPrefix.UserProfile, value, true));
+            appdirs.ForEach((value) => DirHelpers.RemoveDir(DirPrefix.UserProfile, value));
         }
     }
 }

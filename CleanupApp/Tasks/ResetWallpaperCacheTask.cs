@@ -12,6 +12,7 @@ namespace CleanupApp.Tasks
         public ResetWallpaperCacheTask()
         {
             Name = "Reset wallpaper cache";
+            Codename = "wpp";
             Action = ResetWallpaper;
         }
 

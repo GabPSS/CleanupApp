@@ -1,7 +1,5 @@
-﻿using System.Runtime.InteropServices;
-using CleanupApp.TaskHelpers;
+﻿using CleanupApp.Models;
 using CleanupApp.Tasks;
-using CleanupApp.Models;
 
 namespace CleanupApp
 {
@@ -9,35 +7,71 @@ namespace CleanupApp
     {
         static void Main(string[] args)
         {
-            List<CleaningTask> CleaningTasks = new List<CleaningTask>() { 
+            List<CleaningTask> cleaningTasks = new List<CleaningTask>() {
                 new ClearDirsTask(),
                 new WinClearRecentFilesTask(),
-                new ChromiumTask(),
+                new AppDirsTask(),
+                new RemoveBrowsingDataTask(),
                 new ResetWallpaperCacheTask(),
             };
 
-            int result = args.Length != 1 ? ShowMenu(CleaningTasks) : int.Parse(args[0]);
+            Console.WriteLine("CleanupApp 0.1.0");
 
-            if (result == -1)
+            if (args.Contains("--help") || args.Contains("/?"))
             {
-                foreach (var task in CleaningTasks)
+                ShowHelp(cleaningTasks);
+                return;
+            }
+
+            List<int>? tasksToRun = GetWhichTasksToRun(args, cleaningTasks);
+
+            for (int taskIndex = 0; taskIndex < cleaningTasks.Count; taskIndex++)
+            {
+                if (tasksToRun?.Contains(taskIndex) ?? true)
                 {
-                    task.Run();
+                    cleaningTasks[taskIndex].Run();
+                }
+            }
+
+            Console.WriteLine("=== Cleaning complete ===");
+        }
+
+        private static List<int>? GetWhichTasksToRun(string[] args, List<CleaningTask> availableTasks)
+        {
+            List<int> tasks = new();
+            if (args.Length > 0)
+            {
+                if (args.Contains("--all"))
+                {
+                    return null;
+                }
+
+                for (int i = 0; i < availableTasks.Count; i++)
+                {
+                    CleaningTask task = availableTasks[i];
+                    if (args.Contains("--" + task.Codename))
+                    {
+                        tasks.Add(i);
+                    }
                 }
             }
             else
             {
-                CleaningTasks[result].Run();
+                int selection = ShowMenu(availableTasks);
+                if (selection == -1) return null;
+                tasks.Add(selection);
             }
 
-            Console.WriteLine("=== Cleaning complete ===");
+            return tasks;
         }
 
         static int ShowMenu(List<CleaningTask> tasks)
         {
             while (true)
             {
-                Console.WriteLine("Options:\n" +
+                Console.Clear();
+
+                Console.WriteLine("Welcome to CleanupApp!\n\nOptions:\n" +
                 "[0] - Run all");
 
 
@@ -53,8 +87,25 @@ namespace CleanupApp
                 {
                     return result - 1;
                 }
+            }
+        }
 
-                Console.Clear();
+        static void ShowHelp(List<CleaningTask> tasks)
+        {
+            Console.WriteLine("Usage:");
+            Console.Write("cleaningapp [--help][--all]");
+            foreach (CleaningTask task in tasks)
+            {
+                Console.Write("[--" + task.Codename + "]");
+            }
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("--all".PadLeft(20) + "  Run all cleaning tasks");
+            Console.WriteLine("--help".PadLeft(20) + "  Display help message");
+            foreach (CleaningTask task in tasks)
+            {
+                Console.Write(("--" + task.Codename).PadLeft(20));
+                Console.WriteLine("  " + task.Name);
             }
         }
     }

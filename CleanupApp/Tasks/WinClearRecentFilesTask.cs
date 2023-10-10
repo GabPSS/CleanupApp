@@ -13,6 +13,7 @@ namespace CleanupApp.Tasks
         public WinClearRecentFilesTask()
         {
             Name = "Clear recent files";
+            Codename = "recent-files";
             Action = ClearRecentFiles;
         }
 

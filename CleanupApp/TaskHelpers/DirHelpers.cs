@@ -11,7 +11,7 @@
                 {
                     File.Delete(path);
                 }
-                catch (System.IO.IOException)
+                catch (IOException)
                 {
                     Console.WriteLine("ERROR: Got \"Access denied\" when trying to delete " + path);
                 }
@@ -36,6 +36,24 @@
             {
                 RemoveDirByIteration(dir);
             }
+        }
+
+        public static void RemoveDir(DirPrefix prefixType, string dir, bool keepDir = false)
+        {
+            string? prefix = "";
+            switch (prefixType)
+            {
+                case DirPrefix.DriveRoot:
+                    prefix = Environment.GetEnvironmentVariable("HOMEDRIVE");
+                    break;
+                case DirPrefix.UserProfile:
+                    prefix = Environment.GetEnvironmentVariable("USERPROFILE");
+                    break;
+                case DirPrefix.LocalAppData:
+                    prefix = Environment.GetEnvironmentVariable("LOCALAPPDATA");
+                    break;
+            }
+            RemoveDir(prefix + "\\" + dir, keepDir);
         }
 
         private static void RemoveDirByIteration(string dir)
@@ -77,4 +95,6 @@
 
 
     }
+
+    public enum DirPrefix { DriveRoot, UserProfile, LocalAppData }
 }
